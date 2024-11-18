@@ -34,7 +34,8 @@ class Agent:
         print("hello")
         self.wait_for_connected_agent()
 
-        #test
+        
+
     def msg_cb(self): 
         """ Method used to handle incoming messages """
         while self.running:
@@ -50,6 +51,8 @@ class Agent:
 
             print("hellooo: ", msg)
             print("agent_id ", self.agent_id)
+            if msg["header"] == GET_DATA:
+                print("cell", msg["cell_val"])
             
 
     def wait_for_connected_agent(self):
@@ -62,7 +65,16 @@ class Agent:
 
                   
 
-    #TODO: CREATE YOUR METHODS HERE...
+    def navigation(self):
+        while True:
+            cmds = {"header": int(input("0 <-> Broadcast msg\n1 <-> Get data\n2 <-> Move\n3 <-> Get nb connected agents\n4 <-> Get nb agents\n5 <-> Get item owner\n"))}
+            if cmds["header"] == BROADCAST_MSG:
+                cmds["Msg type"] = int(input("1 <-> Key discovered\n2 <-> Box discovered\n3 <-> Completed\n"))
+                cmds["position"] = (agent.x, agent.y)
+                cmds["owner"] = randint(0,3) # TODO: specify the owner of the item
+            elif cmds["header"] == MOVE:
+                cmds["direction"] = int(input("0 <-> Stand\n1 <-> Left\n2 <-> Right\n3 <-> Up\n4 <-> Down\n5 <-> UL\n6 <-> UR\n7 <-> DL\n8 <-> DR\n"))
+            self.network.send(cmds)
 
             
  
@@ -74,6 +86,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     agent = Agent(args.server_ip)
+
+    agent.navigation()
     
     try:    #Manual control test0
         while True:
